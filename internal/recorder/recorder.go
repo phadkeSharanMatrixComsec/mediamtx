@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/bluenviron/mediamtx/internal/conf"
+	"github.com/bluenviron/mediamtx/internal/eventnotifier"
 	"github.com/bluenviron/mediamtx/internal/logger"
 	"github.com/bluenviron/mediamtx/internal/stream"
 )
@@ -67,6 +68,11 @@ func (r *Recorder) Log(level logger.Level, format string, args ...interface{}) {
 
 // Close closes the agent.
 func (r *Recorder) Close() {
+	// Initialize the event notifier and send recording stopped event
+	notifier := eventnotifier.NewDefaultEventNotifier()
+	notifier.NotifyRecordingEvent("RecordingStopped", r.PathName, &eventnotifier.RecordingEventDetails{
+		Path: r.PathName,
+	})
 	r.Log(logger.Info, "recording stopped")
 	close(r.terminate)
 	<-r.done

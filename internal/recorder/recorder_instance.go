@@ -7,6 +7,7 @@ import (
 	"github.com/bluenviron/mediacommon/v2/pkg/formats/fmp4"
 
 	"github.com/bluenviron/mediamtx/internal/conf"
+	"github.com/bluenviron/mediamtx/internal/eventnotifier"
 	"github.com/bluenviron/mediamtx/internal/logger"
 	"github.com/bluenviron/mediamtx/internal/recordstore"
 )
@@ -79,6 +80,14 @@ func (ri *recorderInstance) run() {
 		select {
 		case err := <-ri.rec.Stream.ReaderError(ri):
 			ri.Log(logger.Error, err.Error())
+
+			notifier := eventnotifier.NewDefaultEventNotifier()
+
+			// Event with details
+			notifier.NotifyRecordingEvent("RecordingError", ri.rec.PathName, &eventnotifier.RecordingEventDetails{
+				Path:  ri.rec.PathName,
+				Error: err.Error(),
+			})
 
 		case <-ri.terminate:
 		}
