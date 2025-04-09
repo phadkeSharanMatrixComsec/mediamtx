@@ -47,7 +47,7 @@ func (en *EventNotifier) NotifyRecordingEvent(event, pathName string, details *R
 		}
 
 		url := fmt.Sprintf("%s/api/Event/recording", en.baseURL)
-		req, err := http.NewRequest("POST", url, bytes.NewBuffer(jsonBody))
+		req, err := http.NewRequest(http.MethodPost, url, bytes.NewBuffer(jsonBody))
 		if err != nil {
 			fmt.Printf("failed to create request: %v\n", err)
 			return
