@@ -20,6 +20,7 @@ import (
 	"github.com/bluenviron/mediacommon/v2/pkg/formats/fmp4"
 
 	"github.com/bluenviron/mediamtx/internal/defs"
+	"github.com/bluenviron/mediamtx/internal/eventnotifier"
 	"github.com/bluenviron/mediamtx/internal/formatprocessor"
 	"github.com/bluenviron/mediamtx/internal/logger"
 	"github.com/bluenviron/mediamtx/internal/unit"
@@ -873,6 +874,12 @@ func (f *formatFMP4) initialize() bool {
 
 	f.ri.Log(logger.Info, "recording %s",
 		defs.FormatsInfo(setuppedFormats))
+
+	// Initialize the event notifier and send recording started event
+	notifier := eventnotifier.NewDefaultEventNotifier()
+	notifier.NotifyRecordingEvent("RecordingStarted", f.ri.rec.PathName, &eventnotifier.RecordingEventDetails{
+		Path: f.ri.pathFormat,
+	})
 
 	return true
 }
